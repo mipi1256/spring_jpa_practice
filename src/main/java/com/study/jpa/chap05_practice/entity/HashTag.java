@@ -23,7 +23,7 @@ public class HashTag {
 
    private String tagName; // 해시태그 이름
 
-   @ManyToOne(fetch = LAZY) // Almost the default fetch type
+   @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE) // Almost the default fetch type
    @JoinColumn(name = "post_no")
    private Post post;
 

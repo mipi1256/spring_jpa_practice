@@ -41,14 +41,14 @@ public class Post {
    @UpdateTimestamp
    private LocalDateTime updateDate; // 수정 시간
 
-   @OneToMany(mappedBy = "post")
+   @OneToMany(mappedBy = "post", orphanRemoval = true)
    @Builder.Default // Builder 패턴으로 객체를 생성할 때, 특정 필드를 직접 지정한 값으로 초기화 하는 것을 강제.0
    List<HashTag> hashTags = new ArrayList<>();
 
    // 양방향 관계에서 리스트쪽에 데이터를 추가하는 편의 메서드 생성.
    // INSERT -> SELECT를 진행하는 것도 가능하지만 (entityManager를 이용해서)
    // INSERT와 동시에 실시간으로 리스트에 동기화.
-   public void addHasTag(HashTag hashTag) {
+   public void addHashTag(HashTag hashTag) {
       this.hashTags.add(hashTag); // 매개값으로 전달받은 HashTag 객체를 리스트에 추가.
 
       // 전달된 HashTag 객체가 가지고 있는 Post가

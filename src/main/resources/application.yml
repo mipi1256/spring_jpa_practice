@@ -18,3 +18,41 @@ spring:
     hibernate:
       ddl-auto: update # ?? DDL ?? ?? -> create? ???? ??? ???? ??? ?? ??.
     database: mysql # DB ?? ?? (MariaSql will also be specified as mysql)
+
+# swagger setting
+springdoc:
+  swagger-ui:
+    path: /myapi.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
