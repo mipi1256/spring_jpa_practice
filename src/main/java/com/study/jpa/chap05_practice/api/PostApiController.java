@@ -1,15 +1,20 @@
 package com.study.jpa.chap05_practice.api;
 
 import com.study.jpa.chap05_practice.dto.PageDTO;
+import com.study.jpa.chap05_practice.dto.PostCreateDTO;
+import com.study.jpa.chap05_practice.dto.PostDetailResponseDTO;
 import com.study.jpa.chap05_practice.dto.PostListResponseDTO;
 import com.study.jpa.chap05_practice.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -37,6 +42,47 @@ public class PostApiController {
       return ResponseEntity.ok().body(dto);
    }
 
+   @GetMapping("/{id}")
+   public ResponseEntity<?> detail(@PathVariable Long id) {
+      log.info("/api/v1/posts/{}: GET!", id);
+
+      try {
+         PostDetailResponseDTO dto = postService.getDetail(id);
+         return ResponseEntity.ok().body(dto);
+      } catch (Exception e) {
+         return ResponseEntity.badRequest().body(e.getMessage());
+      }
+
+   }
+
+   // 게시물 등록
+   @PostMapping
+   public ResponseEntity<?> create(@Validated @RequestBody PostCreateDTO dto,
+                                   BindingResult result  /* 검증 에러 벙보를 가진 객체*/) {
+
+      log.info("/api/v1/posts: POST! - payload: {}", dto);
+
+      if (dto == null) {
+         return ResponseEntity.badRequest().body("등록 게시물 정보를 전달해 주세요!");
+      }
+
+      if (result.hasErrors()) { // 입력값 검증 단계에서 문제가 있었다면 true
+         List<FieldError> fieldError = result.getFieldErrors();
+         fieldError.forEach(err ->
+               log.warn("invalid cliet data - {}", err.toString()));
+         return ResponseEntity.badRequest().body(fieldError);
+      }
+
+      // 위에 존재하는 if문을 모두 건너뜀 -> dto가 null도 아니고, 입력값 검증도 모두 통과함 -> service에게 명령.
+      try {
+         PostDetailResponseDTO responseDTO = postService.insert(dto);
+         return ResponseEntity.ok().body(responseDTO);
+      } catch (Exception e) {
+         e.printStackTrace();
+         return ResponseEntity.internalServerError().body("서버 에러 원인: " + e.getMessage());
+      }
+
+   }
 
 
 }
